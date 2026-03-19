@@ -21,7 +21,7 @@ The system monitors social media for emerging disasters, deploys autonomous dron
 ## Platform Architecture
 
 <p align="center">
-  <img src="../framework.jpg" alt="ResQNet platform" width="100%"/>
+  <img src="./framework.jpg" alt="ResQNet platform" width="100%"/>
 </p>
 
 ---
