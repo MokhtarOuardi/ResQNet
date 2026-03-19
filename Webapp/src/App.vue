@@ -28,7 +28,7 @@ onUnmounted(() => {
     <header class="app-header">
       <div class="logo">
         <span class="pulse-indicator"></span>
-        <h1>FIRST RESPONDER <span class="highlight">SWARM INTELLIGENCE</span></h1>
+        <h1>RESQNET <span class="highlight">SWARM INTELLIGENCE</span></h1>
       </div>
       <div class="fleet-status">
         <div class="status-item">
