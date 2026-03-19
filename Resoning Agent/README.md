@@ -30,21 +30,10 @@ The Reasoning Agent is the cognitive core of the ResQNet platform. It ingests re
 
 ## Architecture Overview
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                     ResQNet Platform                     │
-│  ┌─────────┐   ┌──────────────────┐   ┌──────────────┐  │
-│  │  WebApp  │◄─►│ Reasoning Agent  │◄─►│Drone Control │  │
-│  └─────────┘   └──────────────────┘   └──────────────┘  │
-│                        │                                 │
-│            ┌───────────┼───────────┐                     │
-│            ▼           ▼           ▼                     │
-│       ┌────────┐  ┌────────┐  ┌────────┐                │
-│       │  LLM   │  │  VLM   │  │  YOLO  │                │
-│       │OpenRtr │  │OpenRtr │  │ Local  │                │
-│       └────────┘  └────────┘  └────────┘                │
-└──────────────────────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="../framework.jpg" alt="ResQNet platform" width="100%"/>
+</p>
+
 
 The Reasoning Agent exposes a **FastAPI** service that:
 

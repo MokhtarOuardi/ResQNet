@@ -10,7 +10,7 @@
 
 ---
 
-## 🌍 What is ResQNet?
+## What is ResQNet?
 
 **ResQNet** is an end-to-end platform that combines **AI reasoning**, **drone swarm coordination**, and a **real-time operator dashboard** to accelerate search-and-rescue operations during natural disasters.
 
@@ -18,29 +18,15 @@ The system monitors social media for emerging disasters, deploys autonomous dron
 
 ---
 
-## 🏗️ Platform Architecture
+## Platform Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        ResQNet Platform                         │
-│                                                                 │
-│   ┌───────────────┐   ┌─────────────────┐   ┌───────────────┐  │
-│   │    WebApp      │◄─►│ Reasoning Agent │◄─►│Drone Controller│  │
-│   │  (Dashboard)   │   │   (AI Core)     │   │  (Swarm Mgmt)  │  │
-│   └───────────────┘   └─────────────────┘   └───────────────┘  │
-│                              │                                   │
-│                ┌─────────────┼─────────────┐                     │
-│                ▼             ▼             ▼                     │
-│          ┌──────────┐  ┌──────────┐  ┌──────────┐               │
-│          │   LLM    │  │   VLM    │  │   YOLO   │               │
-│          │ Planning │  │ Vision   │  │Detection │               │
-│          └──────────┘  └──────────┘  └──────────┘               │
-└─────────────────────────────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="../framework.jpg" alt="ResQNet platform" width="100%"/>
+</p>
 
 ---
 
-## 📦 Modules
+## Modules
 
 | Module | Description | Status |
 |---|---|---|
@@ -50,7 +36,7 @@ The system monitors social media for emerging disasters, deploys autonomous dron
 
 ---
 
-## 🔄 Operational Phases
+## Operational Phases
 
 ### Phase 0 — Monitor *(Always Running)*
 - Scrape X (Twitter) trending topics for potential disasters
@@ -73,7 +59,7 @@ The system monitors social media for emerging disasters, deploys autonomous dron
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technologies |
 |---|---|
@@ -85,7 +71,7 @@ The system monitors social media for emerging disasters, deploys autonomous dron
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ```bash
 # Clone the repo
@@ -99,12 +85,9 @@ Each module has its own README with detailed setup and configuration instruction
 
 ---
 
-## 👥 Team
+## Team
 
 Built for **Hackathon 2025**.
 
 ---
 
-## 📄 License
-
-This project is part of the ResQNet Hackathon 2025 submission.
