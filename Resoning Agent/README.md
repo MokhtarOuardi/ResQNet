@@ -1,4 +1,4 @@
-<![CDATA[# 🚁 ResQNet — Reasoning Agent
+# 🚁 ResQNet — Reasoning Agent
 
 > **AI-powered reasoning engine for autonomous search-and-rescue drone swarm coordination.**
 
@@ -393,4 +393,3 @@ graph TD
 ## License
 
 Part of the **ResQNet** platform — Hackathon 2025.
-]]>
