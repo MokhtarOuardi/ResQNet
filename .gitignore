@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+venv/
+.venv/
+env/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# YOLO weights (large files)
+*.pt
+*.onnx
+
+# Logs
+*.log
+
+# Node (for Webapp)
+node_modules/
+.next/
+
+# Dataset (large image files)
+Dataset/
+
+# Gemini
+.gemini/
