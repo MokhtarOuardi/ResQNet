@@ -1,4 +1,8 @@
-# 🚁 ResQNet — Reasoning Agent
+<p align="center">
+  <img src="../banner.jpg" alt="ResQNet Banner" width="100%"/>
+</p>
+
+# Reasoning Agent
 
 > **AI-powered reasoning engine for autonomous search-and-rescue drone swarm coordination.**
 
