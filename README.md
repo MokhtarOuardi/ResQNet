@@ -132,7 +132,7 @@ Developed by **Mokhtar Ouardi**, **Adam Aburaya** and **Anas Aburaya** for the v
 
 - **Mokhtar Ouardi**: [GitHub](https://github.com/MokhtarOuardi) | [Email](mailto:m.ouardi@graduate.utm.my)
 - **Anas Aburaya**: [GitHub](https://github.com/Shadowpasha) | [Email](mailto:ameranas1923@gmail.com)
-- **Adam Aburaya**: [GitHub](https://github.com/adam) | [Email](mailto:@gmail.com)
+- **Adam Aburaya**: [GitHub](https://github.com/amer-adam) | [Email](mailto:ameradam6a@gmail.com)
 
 ---
 © 2026 ResQnet Team. All rights reserved.
