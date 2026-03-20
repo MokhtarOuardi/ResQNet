@@ -12,59 +12,43 @@ flowchart TB
     classDef ai fill:#8b5cf6,stroke:#5b21b6,color:#fff
     classDef external fill:#64748b,stroke:#334155,color:#fff
 
-    subgraph UserInterface [🌐 Web Application]
+    subgraph UserInterface ["Web Application"]
         direction TB
-        UI[Operator Dashboard]:::frontend --> Map[Geospatial Maps & Heatmaps]:::frontend
-        UI --> Alarm[Real-time Alarm Panel]:::frontend
+        UI["Operator Dashboard"]:::frontend --> Map["Geospatial Maps & Heatmaps"]:::frontend
+        UI --> Alarm["Real-time Alarm Panel"]:::frontend
     end
 
-    subgraph ReasoningAgent [🧠 Reasoning Agent (Python / FastAPI)]
+    subgraph ReasoningAgent ["Reasoning Agent (Python / FastAPI)"]
         direction TB
-        Agent[Unified Agent Orchestrator]:::agent --> API[FastAPI Endpoints]:::agent
+        Agent["Unified Agent Orchestrator"]:::agent --> API["FastAPI Endpoints"]:::agent
         
-        API --> Monitor[Phase 0: Monitor
-        • X/Twitter Scraping (twikit)
-        • LLM Classification]:::agent
+        API --> Monitor["Phase 0: Monitor<br/>• X/Twitter Scraping (twikit)<br/>• LLM Classification"]:::agent
         
-        API --> Scout[Phase 1: Scout
-        • Zone Mapping & Detections
-        • Danger/Priority Heatmaps
-        • Rescue Strategy]:::agent
+        API --> Scout["Phase 1: Scout<br/>• Zone Mapping & Detections<br/>• Danger/Priority Heatmaps<br/>• Rescue Strategy"]:::agent
         
-        API --> Search[Phase 2a: Search
-        • Continuous Drone Feeds
-        • Medical & Threat Alarms]:::agent
+        API --> Search["Phase 2a: Search<br/>• Continuous Drone Feeds<br/>• Medical & Threat Alarms"]:::agent
         
-        API --> Rescue[Phase 2b: Rescue
-        • Safety Instructions
-        • Operator Guidance]:::agent
+        API --> Rescue["Phase 2b: Rescue<br/>• Safety Instructions<br/>• Operator Guidance"]:::agent
     end
 
-    subgraph AI_Models [🤖 AI & ML Models]
+    subgraph AI_Models ["AI & ML Models"]
         direction TB
-        OR[OpenRouter API
-        • LLMs (Planning & Strategy)
-        • VLMs (Scene Description)]:::ai
-        YOLO[Ultralytics YOLO
-        • Local Object Detection
-        • Building/Person Tracking]:::ai
+        OR["OpenRouter API<br/>• LLMs (Planning & Strategy)<br/>• VLMs (Scene Description)"]:::ai
+        YOLO["Ultralytics YOLO<br/>• Local Object Detection<br/>• Building/Person Tracking"]:::ai
     end
 
-    subgraph DroneController [🚁 Drone Controller (Unity / C#)]
+    subgraph DroneController ["Drone Controller (Unity / C#)"]
         direction TB
-        Sim[Physics & Sensor Simulation
-        • GPS, Altitude, Battery]:::drone
-        Nav[Flight Stack
-        • APF Navigation, PID, A*]:::drone
-        Data[Telemetry & Streaming
-        • WebSocket Feed, Log Saving]:::drone
+        Sim["Physics & Sensor Simulation<br/>• GPS, Altitude, Battery"]:::drone
+        Nav["Flight Stack<br/>• APF Navigation, PID, A*"]:::drone
+        Data["Telemetry & Streaming<br/>• WebSocket Feed, Log Saving"]:::drone
         
         Sim --- Nav --- Data
     end
 
-    subgraph External [🌍 External Services]
+    subgraph External ["External Services"]
         direction TB
-        X[X / Twitter Network]:::external
+        X["X / Twitter Network"]:::external
     end
 
     %% Data Flow Connections
