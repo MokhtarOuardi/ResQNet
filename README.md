@@ -111,14 +111,15 @@ See individual module READMEs for detailed setup and configuration instructions.
 
 ---
 
-## Developers
+## Contact and Credits
 
-| Name | Role |
-|---|---|
-| Mokhtar Ouardi | Lead Developer |
+Developed by **Mokhtar Ouardi** and **Anas Aburaya** for the Deriv Hackathon.
 
-Built for **Hackathon 2025**.
+- **Mokhtar Ouardi**: [GitHub](https://github.com/MokhtarOuardi) | [Email](mailto:m.ouardi@graduate.utm.my)
+- **Anas Aburaya**: [GitHub](https://github.com/Shadowpasha) | [Email](mailto:ameranas1923@gmail.com)
+- **Adam Aburaya**: [GitHub](https://github.com/adam) | [Email](mailto:@gmail.com)
 
 ---
+© 2026 ResQnet Team. All rights reserved.
 </CodeContent>
 <parameter name="Complexity">5
