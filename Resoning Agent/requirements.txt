@@ -1,0 +1,10 @@
+# ResQNet Reasoning Agent — Dependencies
+twikit
+httpx
+fastapi
+uvicorn[standard]
+apscheduler
+pydantic
+pydantic-settings
+python-dotenv
+loguru

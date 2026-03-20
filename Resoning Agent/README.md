@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="../banner.jpg" alt="ResQNet Banner" width="100%"/>
+  <img src="../banner_2.jpg" alt="ResQNet Banner" width="100%"/>
 </p>
 
 # Reasoning Agent
 
 > **AI-powered reasoning engine for autonomous search-and-rescue drone swarm coordination.**
 
-The Reasoning Agent is the cognitive core of the ResQNet platform. It ingests real-time social-media signals and drone imagery, builds situational-awareness maps, and produces actionable rescue strategies — all orchestrated through a multi-phase pipeline backed by **LLMs**, **VLMs**, and **object-detection models**.
+The Reasoning Agent is the cognitive core of the ResQNet platform. It ingests real-time social-media signals and drone imagery, builds situational-awareness maps, and produces actionable rescue strategies -- all orchestrated through a multi-phase pipeline backed by LLMs and VLMs via OpenRouter.
 
 ---
 
@@ -14,17 +14,11 @@ The Reasoning Agent is the cognitive core of the ResQNet platform. It ingests re
 
 - [Architecture Overview](#architecture-overview)
 - [Phase Pipeline](#phase-pipeline)
-  - [Phase 0 — Monitor](#phase-0--monitor)
-  - [Phase 1 — Scout](#phase-1--scout)
-  - [Phase 2a — Search](#phase-2a--search)
-  - [Phase 2b — Rescue](#phase-2b--rescue)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Models & Providers](#models--providers)
 - [API Reference](#api-reference)
+- [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
-- [License](#license)
+- [Developers](#developers)
 
 ---
 
@@ -34,123 +28,163 @@ The Reasoning Agent is the cognitive core of the ResQNet platform. It ingests re
   <img src="../framework.jpg" alt="ResQNet platform" width="100%"/>
 </p>
 
+The Reasoning Agent runs as **5 FastAPI services** (4 modules + 1 unified agent):
 
-The Reasoning Agent exposes a **FastAPI** service that:
+| Service | Port | Role |
+|---|---|---|
+| **Monitor** (`monitor.py`) | 8000 | Social media intelligence |
+| **Scout** (`scout.py`) | 8001 | Drone frame analysis and zone mapping |
+| **Search** (`search.py`) | 8002 | Continuous detection and emergency alerts |
+| **Rescue** (`rescue.py`) | 8003 | Safety instructions and operator guidance |
+| **Agent** (`ResQnet_agent.py`) | 8080 | Unified LLM agent with tool-calling |
 
-1. Communicates with the **WebApp** via REST/WebSocket APIs.
-2. Sends geolocation instructions and receives feeds from the **Drone Controller**.
-3. Delegates inference to three model tiers — LLM, VLM, and YOLO.
+The services communicate with:
+- **WebApp** via REST APIs
+- **Drone Controller** (Unity, port 5000) for flight commands and receiving feeds
+- **OpenRouter** for LLM and VLM inference
 
 ---
 
 ## Phase Pipeline
 
-### Phase 0 — Monitor
+### Phase 0 -- Monitor
 
-> *Always running — triggered once per hour (configurable via cron).*
+> Always running. Scrapes X/Twitter for disaster signals.
 
-| Capability | Description |
-|---|---|
-| **Trend Scraping** | Scrape trending topics on X (Twitter) to detect potential disasters in real time. |
-| **Hashtag Intelligence** | Once a candidate event is identified, scrape relevant hashtags for incident details (location, severity, type). |
-| **Validation** | LLM-based classification to filter noise and confirm genuine disaster signals. |
-| **WebApp API** | REST endpoint for the WebApp to query the latest monitoring results and alerts. |
+| Function | Endpoint | Description |
+|---|---|---|
+| Scan Trends | `POST /api/monitor/scan_trends` | Scrape trending topics, LLM classifies for disaster relevance |
+| Analyze Hashtag | `POST /api/monitor/analyze_tag` | Deep-dive a hashtag for rescue-relevant incident details |
+| Update Context | `POST /api/monitor/update_context` | Append reasoning to persistent context for continuity |
 
-**Key components:** `monitor/scraper.py`, `monitor/classifier.py`, `monitor/scheduler.py`
+Uses **twikit** for X/Twitter scraping (no API key required) and LLM for classification.
 
 ---
 
-### Phase 1 — Scout
+### Phase 1 -- Scout
 
-> *Activated when an operator selects a search-and-rescue area.*
+> Activated when an operator selects a search-and-rescue area.
 
-| Capability | Description |
-|---|---|
-| **Geo-dispatch** | Send selected geolocation bounds to the Drone Controller API. |
-| **Initial Feed Analysis** | VLM + YOLO process the first high-altitude drone feed to produce a scene report. |
-| **Building Detection** | YOLO-based detection of structures in the geo-zone. |
-| **Population Estimation** | VLM-driven crowd/density estimation. |
-| **Disaster Classification** | Detect flood, fire, structural collapse, etc. |
-| **Danger Heatmap** | Spatial heatmap of hazard intensity across the zone. |
-| **People Density Map** | Estimated population distribution overlay. |
-| **Rescue Priority Map** | Combined risk × density heatmap to rank rescue urgency. |
-| **Strategy Generation** | LLM synthesizes all maps into a rescue strategy document. |
-| **Escape Route Overlay** | LLM + pathfinding generates safe evacuation routes and safety-zone markers. |
+| Function | Endpoint | Description |
+|---|---|---|
+| Detect Frame | `POST /api/scout/detect` | VLM analyzes a drone frame for buildings, people, fire, smoke, flood |
+| Split Zones | `POST /api/scout/split_zones` | Parse drone logs, split GPS area into NxN grid, map frames to zones |
+| Danger Rating | `POST /api/scout/danger_rating` | VLM samples zone frames, rates danger 0.0 to 1.0 |
+| People Density | `POST /api/scout/density` | VLM estimates population density per zone |
+| Rescue Priority | `POST /api/scout/priority` | VLM + context assigns priority 1 (highest) to 10 (lowest) |
+| Rescue Strategy | `POST /api/scout/strategy` | LLM generates phased rescue plan with resource allocation |
+| Escape Routes | `POST /api/scout/escape_routes` | LLM identifies safety zones and generates evacuation routes |
 
-**Key components:** `scout/dispatcher.py`, `scout/scene_analyzer.py`, `scout/heatmap_engine.py`, `scout/strategy_generator.py`
+Reads drone frame JPGs and per-drone log files (`FrameNum|Timestamp|GPS_X|GPS_Y|Altitude|Battery`).
 
 ---
 
-### Phase 2a — Search
+### Phase 2a -- Search
 
-> *Active during stage 2 — closer-range reconnaissance.*
+> Active during stage 2. Continuous monitoring of drone feeds.
 
-| Capability | Description |
-|---|---|
-| **Refined Instructions** | Send updated drone waypoints/altitude to the Drone Controller for closer-range sweeps. |
-| **Continuous Feed Analysis** | Process new, higher-resolution frames with VLM + YOLO. |
-| **Map Updates** | Incrementally update danger, density, and priority heatmaps with new detections. |
+| Function | Endpoint | Description |
+|---|---|---|
+| Continuous Update | `POST /api/search/update` | Batch-process new drone frames, track changes and urgency |
+| Medical Detection | `POST /api/search/medical` | VLM detects medical emergencies, auto-triggers alarm if critical |
+| Threat Detection | `POST /api/search/threats` | VLM detects structural, fire, flood, and other threats |
 
-**Key components:** `search/flight_planner.py`, `search/feed_processor.py`, `search/map_updater.py`
+Includes an **alarm queue** (`GET /api/search/alarms`) that the WebApp polls for operator notifications.
 
 ---
 
-### Phase 2b — Rescue
+### Phase 2b -- Rescue
 
-> *Active during stage 2 — runs concurrently with Search.*
+> Active during stage 2. Runs concurrently with Search.
 
-| Capability | Description |
-|---|---|
-| **Field Safety Instructions** | LLM generates clear, actionable safety guidance for people on the ground (broadcast-ready). |
-| **Rescue Plan** | LLM produces a structured rescue plan for first-responder officers, including priorities, routes, and resource allocation. |
+| Function | Endpoint | Description |
+|---|---|---|
+| Safety Instructions | `POST /api/rescue/safety_instructions` | VLM describes scene, LLM generates person-specific safety instructions |
+| Operator Suggestions | `POST /api/rescue/operator_suggestions` | VLM tactical assessment, LLM generates operator action plan and resource requests |
 
-**Key components:** `rescue/instruction_generator.py`, `rescue/plan_generator.py`
+Both use a **VLM-to-LLM pipeline**: VLM first analyzes the drone frame to describe the scene, then LLM generates actionable output based on that description.
 
 ---
 
-## Tech Stack
+### Unified Agent
 
-### Core Runtime
+> Single conversational interface for the entire platform.
 
-| Layer | Technology | Purpose |
+| Endpoint | Description |
+|---|---|
+| `POST /api/agent/chat` | Send a message, the LLM autonomously selects and chains tools |
+| `GET /api/agent/tools` | List all 21 available tools |
+| `GET /api/agent/history` | View conversation history |
+
+The agent wraps all module endpoints as **LLM tools** and uses OpenRouter's function-calling to orchestrate them. It can chain up to 10 tool calls per turn.
+
+**Tool inventory (21 total):**
+
+| Module | Tools |
+|---|---|
+| Monitor (4) | `scan_trends`, `analyze_tag`, `update_context`, `get_alerts` |
+| Scout (7) | `detect`, `split_zones`, `danger_rating`, `density`, `priority`, `strategy`, `escape_routes` |
+| Search (4) | `update`, `medical`, `threats`, `get_alarms` |
+| Rescue (2) | `safety_instructions`, `operator_suggestions` |
+| Drone (4) | `send_phase1`, `send_phase2`, `get_data`, `get_frame` |
+
+---
+
+## API Reference
+
+### Monitor (port 8000)
+
+| Method | Endpoint | Description |
 |---|---|---|
-| **Language** | Python 3.11+ | Primary language |
-| **API Framework** | FastAPI + Uvicorn | Async REST & WebSocket server |
-| **Task Scheduling** | APScheduler | Cron-based monitor phase scheduling |
-| **Async HTTP** | httpx / aiohttp | Non-blocking external API calls |
+| `POST` | `/api/monitor/scan_trends` | Scan X trending topics for disaster signals |
+| `POST` | `/api/monitor/analyze_tag` | Analyze a specific hashtag |
+| `POST` | `/api/monitor/update_context` | Append reasoning to context |
+| `GET` | `/api/monitor/status` | Latest monitoring status |
+| `GET` | `/api/monitor/alerts` | Cached scan alerts |
+| `GET` | `/api/monitor/context` | Current reasoning context |
+| `DELETE` | `/api/monitor/context` | Clear reasoning context |
 
-### AI / ML Models
+### Scout (port 8001)
 
-| Model Tier | Provider | Models (recommended) | Role |
-|---|---|---|---|
-| **LLM** | OpenRouter | `anthropic/claude-sonnet-4` / `google/gemini-2.5-pro` | Reasoning, planning, strategy generation, safety instructions |
-| **VLM** | OpenRouter | `google/gemini-2.5-pro` / `anthropic/claude-sonnet-4` | Drone-frame description, population estimation, disaster classification |
-| **Object Detection** | Local (Ultralytics) | YOLOv8 / YOLOv11 (custom-trained) | Building detection, person detection, vehicle detection, fire/flood segmentation |
-
-### Data & Mapping
-
-| Component | Technology | Purpose |
+| Method | Endpoint | Description |
 |---|---|---|
-| **Geospatial** | GeoPandas + Shapely | Zone geometry, coordinate transforms |
-| **Heatmaps** | NumPy + OpenCV | Danger / density / priority map generation |
-| **Map Rendering** | Folium / Leaflet (via API) | Interactive map overlays for the WebApp |
-| **Image Processing** | Pillow + OpenCV | Frame pre-processing, annotation, overlay compositing |
+| `POST` | `/api/scout/detect` | Analyze a drone frame (VLM detection) |
+| `POST` | `/api/scout/split_zones` | Split area into NxN grid |
+| `POST` | `/api/scout/danger_rating` | Danger rating for a zone |
+| `POST` | `/api/scout/density` | People density for a zone |
+| `POST` | `/api/scout/priority` | Rescue priority for a zone |
+| `POST` | `/api/scout/strategy` | Generate rescue strategy |
+| `POST` | `/api/scout/escape_routes` | Generate escape routes |
+| `GET` | `/api/scout/zones` | All zone data |
+| `GET` | `/api/scout/context` | Scout reasoning context |
 
-### Social Media Intelligence
+### Search (port 8002)
 
-| Component | Technology | Purpose |
+| Method | Endpoint | Description |
 |---|---|---|
-| **X (Twitter) Scraping** | Tweepy / Ntscraper / RapidAPI | Trend monitoring & hashtag scraping |
-| **NLP Filtering** | LLM-based (OpenRouter) | Disaster-relevance classification |
+| `POST` | `/api/search/update` | Process new drone frames |
+| `POST` | `/api/search/medical` | Detect medical emergencies |
+| `POST` | `/api/search/threats` | Detect threats |
+| `GET` | `/api/search/alarms` | Active alarm queue |
+| `GET` | `/api/search/status` | Search module status |
+| `DELETE` | `/api/search/alarms` | Clear alarms |
 
-### Infrastructure
+### Rescue (port 8003)
 
-| Component | Technology | Purpose |
+| Method | Endpoint | Description |
 |---|---|---|
-| **Config** | Pydantic Settings + `.env` | Environment-based configuration |
-| **Logging** | Loguru | Structured async-safe logging |
-| **Validation** | Pydantic v2 | Request/response schema validation |
-| **Testing** | pytest + pytest-asyncio | Unit & integration tests |
+| `POST` | `/api/rescue/safety_instructions` | Generate person safety instructions |
+| `POST` | `/api/rescue/operator_suggestions` | Generate operator action suggestions |
+| `GET` | `/api/rescue/context` | Rescue reasoning context |
+
+### Agent (port 8080)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/agent/chat` | Chat with the unified agent |
+| `GET` | `/api/agent/tools` | List available tools |
+| `GET` | `/api/agent/history` | Conversation history |
+| `DELETE` | `/api/agent/history` | Clear history |
 
 ---
 
@@ -158,139 +192,18 @@ The Reasoning Agent exposes a **FastAPI** service that:
 
 ```
 Resoning Agent/
-├── README.md
-├── requirements.txt
-├── .env.example
-├── config/
-│   └── settings.py              # Pydantic settings & env loading
-├── main.py                      # FastAPI app entry point
-├── api/
-│   ├── routes/
-│   │   ├── monitor.py           # Monitor phase endpoints
-│   │   ├── scout.py             # Scout phase endpoints
-│   │   ├── search.py            # Search phase endpoints
-│   │   └── rescue.py            # Rescue phase endpoints
-│   └── schemas/
-│       ├── monitor.py           # Request/response models
-│       ├── scout.py
-│       ├── search.py
-│       └── rescue.py
-├── core/
-│   ├── llm_client.py            # OpenRouter LLM wrapper
-│   ├── vlm_client.py            # OpenRouter VLM wrapper
-│   ├── yolo_detector.py         # Ultralytics YOLO inference
-│   └── prompts/
-│       ├── monitor_prompts.py   # Prompt templates for monitor phase
-│       ├── scout_prompts.py
-│       ├── search_prompts.py
-│       └── rescue_prompts.py
-├── monitor/
-│   ├── scraper.py               # Twitter/X trend & hashtag scraping
-│   ├── classifier.py            # Disaster-event validation (LLM)
-│   └── scheduler.py             # APScheduler cron job
-├── scout/
-│   ├── dispatcher.py            # Send geo-bounds to Drone Controller
-│   ├── scene_analyzer.py        # VLM + YOLO first-frame analysis
-│   ├── heatmap_engine.py        # Danger / density / priority maps
-│   └── strategy_generator.py    # Rescue strategy & escape routes
-├── search/
-│   ├── flight_planner.py        # Updated waypoints for closer sweeps
-│   ├── feed_processor.py        # Continuous VLM + YOLO processing
-│   └── map_updater.py           # Incremental heatmap updates
-├── rescue/
-│   ├── instruction_generator.py # Safety instructions for the field
-│   └── plan_generator.py        # Rescue plan for officers
-├── utils/
-│   ├── geo.py                   # Geospatial helpers
-│   ├── image.py                 # Frame pre-processing utilities
-│   └── overlay.py               # Map overlay compositing
-├── models/
-│   └── yolo/                    # Custom YOLO weights & configs
-└── tests/
-    ├── test_monitor.py
-    ├── test_scout.py
-    ├── test_search.py
-    └── test_rescue.py
+  README.md
+  requirements.txt
+  .env.example
+  .env                          # Your local config (git-ignored)
+  monitor.py                    # Phase 0 -- social media monitoring
+  scout.py                      # Phase 1 -- drone frame analysis, zone mapping
+  search.py                     # Phase 2a -- continuous detection, alarms
+  rescue.py                     # Phase 2b -- safety instructions, operator guidance
+  ResQnet_agent.py              # Unified LLM agent with 21 tools
+  test.py                       # Quick test for monitor/scan_trends
+  test_flow_simulation.py       # End-to-end test: Scout -> Search -> Rescue
 ```
-
----
-
-## Models & Providers
-
-### OpenRouter Integration
-
-All LLM and VLM calls are routed through the [OpenRouter](https://openrouter.ai/) unified API.
-
-```python
-# Example: core/llm_client.py
-import httpx
-
-OPENROUTER_BASE = "https://openrouter.ai/api/v1"
-
-async def chat_completion(messages: list, model: str, **kwargs) -> str:
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            f"{OPENROUTER_BASE}/chat/completions",
-            headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}"},
-            json={"model": model, "messages": messages, **kwargs},
-        )
-        return resp.json()["choices"][0]["message"]["content"]
-```
-
-### YOLO Detection
-
-Object detection runs **locally** via [Ultralytics](https://docs.ultralytics.com/).
-
-```python
-# Example: core/yolo_detector.py
-from ultralytics import YOLO
-
-class Detector:
-    def __init__(self, weights: str = "models/yolo/resqnet.pt"):
-        self.model = YOLO(weights)
-
-    def detect(self, frame, conf: float = 0.25):
-        results = self.model.predict(frame, conf=conf)
-        return results[0].boxes.data.cpu().numpy()
-```
-
-Custom weights can be fine-tuned on disaster-specific datasets (collapsed buildings, flooded areas, fire, stranded persons).
-
----
-
-## API Reference
-
-### Monitor
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/monitor/status` | Latest monitoring status & detected events |
-| `GET` | `/api/monitor/alerts` | Active disaster alerts with confidence scores |
-| `POST` | `/api/monitor/trigger` | Manually trigger a monitoring sweep |
-
-### Scout
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/scout/dispatch` | Send geo-zone to Drone Controller & start scouting |
-| `GET` | `/api/scout/heatmaps` | Retrieve generated heatmaps (danger, density, priority) |
-| `GET` | `/api/scout/strategy` | Get generated rescue strategy |
-| `GET` | `/api/scout/overlay` | Get escape route / safety zone overlay |
-
-### Search
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/search/start` | Send refined instructions & begin search phase |
-| `GET` | `/api/search/maps` | Get latest updated heatmaps |
-| `WS` | `/ws/search/feed` | Real-time feed processing updates |
-
-### Rescue
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/rescue/instructions` | Safety instructions for field broadcast |
-| `GET` | `/api/rescue/plan` | Structured rescue plan for officers |
 
 ---
 
@@ -298,66 +211,62 @@ Custom weights can be fine-tuned on disaster-specific datasets (collapsed buildi
 
 ### Prerequisites
 
-- **Python 3.11+**
-- **OpenRouter API key** → [openrouter.ai](https://openrouter.ai/)
-- **YOLO weights** — pretrained or custom (place in `models/yolo/`)
+- Python 3.11+
+- OpenRouter API key -- [openrouter.ai](https://openrouter.ai/)
+- X/Twitter credentials (for Monitor module only)
 
 ### Installation
 
 ```bash
-# Clone the repo (if standalone)
 cd "ResQNet/Resoning Agent"
 
 # Create virtual environment
 python -m venv venv
-source venv/bin/activate   # Linux/Mac
-venv\Scripts\activate      # Windows
+venv\Scripts\activate            # Windows
+# source venv/bin/activate       # Linux/Mac
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### Environment Variables
-
-Copy `.env.example` to `.env` and fill in:
-
-```env
-OPENROUTER_API_KEY=sk-or-...
-OPENROUTER_LLM_MODEL=anthropic/claude-sonnet-4
-OPENROUTER_VLM_MODEL=google/gemini-2.5-pro
-YOLO_WEIGHTS_PATH=models/yolo/resqnet.pt
-DRONE_CONTROLLER_URL=http://localhost:8001
-MONITOR_INTERVAL_MINUTES=60
-TWITTER_BEARER_TOKEN=...
-```
-
 ### Run
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+# Start individual modules
+python monitor.py               # port 8000
+python scout.py                 # port 8001
+python search.py                # port 8002
+python rescue.py                # port 8003
+
+# Start the unified agent (requires modules above to be running)
+python ResQnet_agent.py         # port 8080
+
+# Run the full flow test (requires scout, search, rescue to be running)
+python test_flow_simulation.py
 ```
 
 ---
 
 ## Configuration
 
-All configuration is managed via **Pydantic Settings** with `.env` file support:
+Copy `.env.example` to `.env` and fill in your values:
 
-```python
-# config/settings.py
-from pydantic_settings import BaseSettings
+```env
+# Twitter / X credentials (for twikit -- Monitor module)
+TWITTER_USERNAME=your_x_username
+TWITTER_EMAIL=your_email@example.com
+TWITTER_PASSWORD=your_password
 
-class Settings(BaseSettings):
-    openrouter_api_key: str
-    openrouter_llm_model: str = "anthropic/claude-sonnet-4"
-    openrouter_vlm_model: str = "google/gemini-2.5-pro"
-    yolo_weights_path: str = "models/yolo/resqnet.pt"
-    drone_controller_url: str = "http://localhost:8001"
-    monitor_interval_minutes: int = 60
-    twitter_bearer_token: str = ""
+# OpenRouter API
+OPENROUTER_API_KEY=sk-or-...
+OPENROUTER_VLM_MODEL=google/gemma-3-4b-it:free
+OPENROUTER_LLM_MODEL=stepfun/step-3.5-flash:free
 
-    class Config:
-        env_file = ".env"
+# Drone Controller
+DRONE_CONTROLLER_URL=http://127.0.0.1:5000
+
+# Dataset path (defaults to ../Dataset)
+DATASET_PATH=../Dataset
 ```
 
 ---
@@ -368,21 +277,30 @@ class Settings(BaseSettings):
 graph TD
     A[Monitor - Hourly] -->|Disaster Detected| B{Operator Decision}
     B -->|Select Area| C[Scout - Phase 1]
-    C -->|Dispatch Drones| D[Drone Controller]
-    D -->|First Feed| C
-    C -->|Heatmaps + Strategy| E[WebApp Dashboard]
-    C -->|Phase 2 Start| F[Search]
-    C -->|Phase 2 Start| G[Rescue]
-    F -->|Closer Feeds| H[Updated Maps]
-    G -->|Safety Instructions| I[Field Broadcast]
-    G -->|Rescue Plan| J[Officers]
-    H --> E
-    I --> E
-    J --> E
+    C -->|Send Corners| D[Drone Controller]
+    D -->|Drone Frames + Logs| C
+    C -->|Split Zones| E[Zone Grid]
+    E --> F[Danger Rating]
+    E --> G[Density Map]
+    E --> H[Priority Rating]
+    F --> I[Strategy + Escape Routes]
+    G --> I
+    H --> I
+    I -->|Phase 2 Start| J[Search - Continuous]
+    I -->|Phase 2 Start| K[Rescue]
+    J -->|Medical/Threat Alarms| L[WebApp Dashboard]
+    K -->|Safety Instructions| L
+    K -->|Operator Suggestions| L
 ```
 
 ---
 
-## License
+## Developers
 
-Part of the **ResQNet** platform — Hackathon 2025.
+| Name | Role |
+|---|---|
+| Mokhtar Ouardi | Lead Developer |
+
+Built for **Hackathon 2025**.
+
+---

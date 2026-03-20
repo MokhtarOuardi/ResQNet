@@ -39,5 +39,19 @@ node_modules/
 # Dataset (large image files)
 Dataset/
 
+# Media files (large)
+*.jpg
+*.jpeg
+*.png
+*.zip
+*.mp4
+
+# Whitelist README images
+!banner_2.jpg
+!framework.jpg
+
 # Gemini
 .gemini/
+
+# Cookies
+cookies.json

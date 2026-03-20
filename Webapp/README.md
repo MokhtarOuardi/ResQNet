@@ -1,4 +1,6 @@
-# 🌐 ResQNet — Web Application
+<p align="center">
+  <img src="../banner_2.jpg" alt="ResQNet Banner" width="100%"/>
+</p>
 
 > **Operator dashboard and control interface for the ResQNet platform.**
 
@@ -15,13 +17,38 @@ The WebApp provides a real-time dashboard for search-and-rescue operators, displ
 - Disaster monitoring alerts panel
 - Officer rescue plan viewer
 - Field safety instruction broadcaster
+- Alarm notifications for medical emergencies and threats
+
+---
+
+## Integration with Reasoning Agent
+
+The WebApp communicates with the Reasoning Agent via REST APIs:
+
+| Agent Endpoint | WebApp Usage |
+|---|---|
+| `POST /api/agent/chat` | Chat interface for the unified agent |
+| `GET /api/search/alarms` | Poll for medical/threat alarms |
+| `GET /api/monitor/alerts` | Display disaster monitoring alerts |
+| `GET /api/scout/zones` | Render zone grid on map |
+| `POST /api/scout/strategy` | Display rescue strategy |
+| `POST /api/rescue/safety_instructions` | Show safety instructions |
+| `POST /api/rescue/operator_suggestions` | Show operator action suggestions |
 
 ---
 
 ## Status
 
-🚧 **Under Development** — UI framework and component structure to be defined.
+Under Development -- UI framework and component structure to be defined.
 
 ---
 
-Part of the **ResQNet** platform — Hackathon 2025.
+## Developers
+
+| Name | Role |
+|---|---|
+| Mokhtar Ouardi | Lead Developer |
+
+Built for **Hackathon 2025**.
+
+---
