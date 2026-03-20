@@ -108,8 +108,7 @@ cd "Resoning Agent"
 pip install -r requirements.txt
 
 # Configure environment
-cp .env.example .env
-# Edit .env with your API keys
+# Create .env with your API keys
 
 # Start all services
 python monitor.py           # port 8000
