@@ -63,7 +63,7 @@ flowchart TB
 
 ## Technology Stack Breakdown
 
-### 1. Reasoning Agent (Cognitive Core)
+### 1. Reasoning Agent
 * **Language**: Python 3.11+
 * **Framework**: FastAPI (Async REST routes), Uvicorn
 * **HTTP/Async**: `httpx`, `asyncio`
