@@ -249,7 +249,7 @@ python test_flow_simulation.py
 
 ## Configuration
 
-Copy `.env.example` to `.env` and fill in your values:
+Create `.env` and fill in your values:
 
 ```env
 # Twitter / X credentials (for twikit -- Monitor module)
@@ -293,14 +293,12 @@ graph TD
     K -->|Operator Suggestions| L
 ```
 
----
+## Contact and Credits
 
-## Developers
+Developed by **Mokhtar Ouardi**, **Adas Aburaya** and **Anas Aburaya** for the vhack Hackathon.
 
-| Name | Role |
-|---|---|
-| Mokhtar Ouardi | Lead Developer |
-
-Built for **Hackathon 2025**.
+- **Mokhtar Ouardi**: [GitHub](https://github.com/MokhtarOuardi) | [Email](mailto:m.ouardi@graduate.utm.my)
+- **Anas Aburaya**: [GitHub](https://github.com/Shadowpasha) | [Email](mailto:ameranas1923@gmail.com)
+- **Adam Aburaya**: [GitHub](https://github.com/adam) | [Email](mailto:@gmail.com)
 
 ---
