@@ -43,7 +43,7 @@ Under Development -- UI framework and component structure to be defined.
 
 ## Contact and Credits
 
-Developed by **Mokhtar Ouardi**, **Anas Aburaya** and **Anas Aburaya** for the vhack Hackathon.
+Developed by **Mokhtar Ouardi**, **Adas Aburaya** and **Anas Aburaya** for the vhack Hackathon.
 
 - **Mokhtar Ouardi**: [GitHub](https://github.com/MokhtarOuardi) | [Email](mailto:m.ouardi@graduate.utm.my)
 - **Anas Aburaya**: [GitHub](https://github.com/Shadowpasha) | [Email](mailto:ameranas1923@gmail.com)
