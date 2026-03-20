@@ -41,14 +41,6 @@ graph TD
 ```
 ---
 
-## Platform Architecture
-
-<p align="center">
-  <img src="./framework.jpg" alt="ResQNet platform" width="100%"/>
-</p>
-
----
-
 ## Modules
 
 | Module | Description | Port |
