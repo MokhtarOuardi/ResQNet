@@ -139,12 +139,12 @@ The `received_data_server.py` (Flask, port 8080) receives drone data:
 
 ---
 
-## Developers
+## Contact and Credits
 
-| Name | Role |
-|---|---|
-| Mokhtar Ouardi | Lead Developer |
+Developed by **Mokhtar Ouardi**, **Adas Aburaya** and **Anas Aburaya** for the vhack Hackathon.
 
-Built for **Hackathon 2025**.
+- **Mokhtar Ouardi**: [GitHub](https://github.com/MokhtarOuardi) | [Email](mailto:m.ouardi@graduate.utm.my)
+- **Anas Aburaya**: [GitHub](https://github.com/Shadowpasha) | [Email](mailto:ameranas1923@gmail.com)
+- **Adam Aburaya**: [GitHub](https://github.com/adam) | [Email](mailto:@gmail.com)
 
 ---
