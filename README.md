@@ -113,7 +113,7 @@ See individual module READMEs for detailed setup and configuration instructions.
 
 ## Contact and Credits
 
-Developed by **Mokhtar Ouardi** and **Anas Aburaya** for the Deriv Hackathon.
+Developed by **Mokhtar Ouardi**, **Adam Aburaya** and **Anas Aburaya** for the vhack Hackathon.
 
 - **Mokhtar Ouardi**: [GitHub](https://github.com/MokhtarOuardi) | [Email](mailto:m.ouardi@graduate.utm.my)
 - **Anas Aburaya**: [GitHub](https://github.com/Shadowpasha) | [Email](mailto:ameranas1923@gmail.com)
