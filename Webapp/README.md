@@ -41,14 +41,13 @@ The WebApp communicates with the Reasoning Agent via REST APIs:
 
 Under Development -- UI framework and component structure to be defined.
 
----
+## Contact and Credits
 
-## Developers
+Developed by **Mokhtar Ouardi**, **Anas Aburaya** and **Anas Aburaya** for the vhack Hackathon.
 
-| Name | Role |
-|---|---|
-| Mokhtar Ouardi | Lead Developer |
-
-Built for **Hackathon 2025**.
+- **Mokhtar Ouardi**: [GitHub](https://github.com/MokhtarOuardi) | [Email](mailto:m.ouardi@graduate.utm.my)
+- **Anas Aburaya**: [GitHub](https://github.com/Shadowpasha) | [Email](mailto:ameranas1923@gmail.com)
+- **Adam Aburaya**: [GitHub](https://github.com/adam) | [Email](mailto:@gmail.com)
 
 ---
+© 2026 ResQnet Team. All rights reserved.
