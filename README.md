@@ -18,6 +18,29 @@ The system monitors social media for emerging disasters, deploys autonomous dron
 
 ---
 
+## Pipeline Flow
+
+```mermaid
+graph TD
+    A[Monitor - Hourly] -->|Disaster Detected| B{Operator Decision}
+    B -->|Select Area| C[Scout - Phase 1]
+    C -->|Send Corners| D[Drone Controller]
+    D -->|Drone Frames + Logs| C
+    C -->|Split Zones| E[Zone Grid]
+    E --> F[Danger Rating]
+    E --> G[Density Map]
+    E --> H[Priority Rating]
+    F --> I[Strategy + Escape Routes]
+    G --> I
+    H --> I
+    I -->|Phase 2 Start| J[Search - Continuous]
+    I -->|Phase 2 Start| K[Rescue]
+    J -->|Medical/Threat Alarms| L[WebApp Dashboard]
+    K -->|Safety Instructions| L
+    K -->|Operator Suggestions| L
+```
+---
+
 ## Platform Architecture
 
 <p align="center">
